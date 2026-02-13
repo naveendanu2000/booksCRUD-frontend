@@ -1,9 +1,9 @@
-import SearchSection from "./components/SearchSection";
+import BooksSection from "./components/BooksSection";
 
 const App = () => {
   return (
     <div className="overflow-x-hidden">
-      <SearchSection />
+      <BooksSection />
     </div>
   );
 };

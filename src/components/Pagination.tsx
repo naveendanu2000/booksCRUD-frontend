@@ -13,9 +13,11 @@ interface Books {
 const Pagination = ({
   refresh,
   setRefresh,
+  paginationApi,
 }: {
   refresh: boolean;
   setRefresh: (x: boolean) => void;
+  paginationApi: string;
 }) => {
   const [books, setBooks] = useState<Books[]>([]);
   const [page, setPage] = useState(1);
@@ -28,7 +30,7 @@ const Pagination = ({
   useEffect(() => {
     const getPageCount = async () => {
       try {
-        const result = await api.get("/api/books/count");
+        const result = await api.get(`${paginationApi}/count`);
         setPageCount(Number(result.data.pages));
         setPageLimit({
           min: 1,
@@ -45,7 +47,7 @@ const Pagination = ({
   useLayoutEffect(() => {
     const getBooks = async () => {
       try {
-        const result = await api.get(`/api/books/${page}`);
+        const result = await api.get(`${paginationApi}/${page}`);
         setBooks(result.data);
       } catch (error) {
         console.error(error);
@@ -55,7 +57,7 @@ const Pagination = ({
     };
 
     getBooks();
-  }, [page, refresh, setRefresh]);
+  }, [page, refresh, setRefresh, paginationApi]);
 
   return (
     <div className="">
