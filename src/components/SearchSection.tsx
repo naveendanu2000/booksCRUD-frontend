@@ -72,7 +72,7 @@ const SearchSection = ({
       }
     };
     getSearch();
-  }, [page, search]);
+  }, [page, search, searchApi]);
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
