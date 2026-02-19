@@ -1,4 +1,4 @@
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { FaStar, FaRegStar, FaEdit } from "react-icons/fa";
 import api from "../api/api";
 import { GiCancel } from "react-icons/gi";
@@ -6,6 +6,11 @@ import { GiCancel } from "react-icons/gi";
 interface FormState {
   error: string | null;
   success: boolean;
+}
+
+interface Author {
+  id: number;
+  name: string;
 }
 
 const initialState: FormState = {
@@ -24,6 +29,9 @@ const CreateBook = ({
 }) => {
   const [rating, setRating] = useState(0);
   const [isEditingRating, setIsEditingRating] = useState(true);
+  const [authorPage, setAuthorPage] = useState(1);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [disableScroll, setDisableScroll] = useState(false);
 
   const bookAction = async (
     prevState: FormState,
@@ -51,6 +59,34 @@ const CreateBook = ({
       return { error: "Something went wrong!", success: false };
     }
   };
+
+  const authorThrottle = () => {
+    if (disableScroll) return;
+
+    setDisableScroll(true);
+
+    setTimeout(() => {
+      setAuthorPage((prev) => prev + 1);
+      setDisableScroll(false);
+    }, 1000);
+    console.log("Throttle Called!");
+  };
+
+  useEffect(() => {
+    const getAuthors = async () => {
+      try {
+        const response = await api.get(`/api/authors/${authorPage}`);
+        setAuthors((prev) => {
+          if (prev.includes(response.data[0])) return prev;
+          return [...prev, ...response.data];
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAuthors();
+  }, [authorPage]);
 
   const [state, formAction, isPending] = useActionState(
     bookAction,
@@ -83,12 +119,19 @@ const CreateBook = ({
             placeholder="Title"
             className="w-full focus:shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)] border border-amber-400 focus:outline-amber-200 px-3 py-2 rounded "
           />
-
-          <input
+          <select
             name="author"
-            placeholder="Author"
-            className="w-full focus:shadow-[inset_0_2px_8px_rgba(0,0,0,0.15)] border border-amber-400 focus:outline-amber-200 px-3 py-2 rounded "
-          />
+            size={5}
+            className="p-5"
+            onScroll={() => authorThrottle()}
+          >
+            <option value="">Select Author</option>
+            {authors.map((author) => (
+              <option key={author.id} value={author.id}>
+                {author.name}
+              </option>
+            ))}
+          </select>
           <textarea
             name="description"
             placeholder="Description"
