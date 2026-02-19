@@ -127,7 +127,7 @@ const CreateBook = ({
           >
             <option value="">Select Author</option>
             {authors.map((author) => (
-              <option key={author.id} value={author.id}>
+              <option value={author.id}>
                 {author.name}
               </option>
             ))}
