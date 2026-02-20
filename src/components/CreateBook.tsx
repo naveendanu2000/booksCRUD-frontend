@@ -38,9 +38,12 @@ const CreateBook = ({
     formData: FormData,
   ): Promise<FormState> => {
     try {
+      const response = await api(`/api/authors/id/${formData.get("author")}`);
+
       const payload = {
         title: formData.get("title"),
-        author: formData.get("author"),
+        author: response.data.name,
+        authorid: formData.get("author"),
         description: formData.get("description"),
         rating: Number(formData.get("rating")),
       };
@@ -51,6 +54,7 @@ const CreateBook = ({
         return { error: "Title and Author are required", success: false };
       }
 
+      // console.log(payload);
       await api.post("/api/books", payload);
       setRefresh(true);
       return { error: null, success: true };
@@ -127,9 +131,7 @@ const CreateBook = ({
           >
             <option value="">Select Author</option>
             {authors.map((author) => (
-              <option value={author.id}>
-                {author.name}
-              </option>
+              <option value={author.id}>{author.name}</option>
             ))}
           </select>
           <textarea
