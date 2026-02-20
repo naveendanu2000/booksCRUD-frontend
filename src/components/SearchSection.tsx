@@ -13,7 +13,13 @@ interface Books {
   rating: number;
 }
 
-const SearchSection = () => {
+const SearchSection = ({
+  searchApi,
+  paginationApi,
+}: {
+  searchApi: string;
+  paginationApi: string;
+}) => {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState<Books[]>([]);
   const [page, setPage] = useState(1);
@@ -31,8 +37,8 @@ const SearchSection = () => {
     setSearch("");
 
     try {
-      const result = await api.get(`/api/books/search/${page}/${search}`);
-      const countResult = await api.get(`/api/books/search/${search}`);
+      const result = await api.get(`${searchApi}/${page}/${search}`);
+      const countResult = await api.get(`${searchApi}}/count/${search}`);
       setSearchResult(result.data);
       setPageCount(Math.ceil(countResult.data / 10));
       console.log(Math.ceil(countResult.data / 10));
@@ -49,8 +55,8 @@ const SearchSection = () => {
     const getSearch = async () => {
       try {
         if (search.length > 0) {
-          const result = await api.get(`/api/books/search/${page}/${search}`);
-          const countResult = await api.get(`/api/books/search/${search}`);
+          const result = await api.get(`${searchApi}/${page}/${search}`);
+          const countResult = await api.get(`${searchApi}/count/${search}`);
           setSearchResult(result.data);
           setPageCount(Math.ceil(countResult.data / 10));
 
@@ -66,7 +72,7 @@ const SearchSection = () => {
       }
     };
     getSearch();
-  }, [page, search]);
+  }, [page, search, searchApi]);
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
@@ -110,7 +116,11 @@ const SearchSection = () => {
           </h1>
         </>
       ) : (
-        <Pagination refresh={refresh} setRefresh={setRefresh} />
+        <Pagination
+          refresh={refresh}
+          setRefresh={setRefresh}
+          paginationApi={paginationApi}
+        />
       )}
       <CreateBook
         isOpen={isCreateModalOpen}

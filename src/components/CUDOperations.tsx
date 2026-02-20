@@ -6,6 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { MdEditSquare } from "react-icons/md";
 import { WarningModal } from "./small-components/WarningModal";
 import { Toast } from "./small-components/Toast";
+import { useNavigate } from "react-router-dom";
 
 interface Book {
   id: number;
@@ -14,6 +15,7 @@ interface Book {
   thumbnail: string;
   description: string;
   rating: number;
+  authorid: number;
 }
 
 const CUDOperations = ({
@@ -27,6 +29,7 @@ const CUDOperations = ({
   setRefresh: (x: boolean) => void;
   current: number;
 }) => {
+  const navigate = useNavigate();
   const [book, setBook] = useState<Book>();
   const [toggleEditDescription, setToggleEditDescription] = useState(false);
   const [toggleEditRating, setToggleEditRating] = useState(false);
@@ -143,6 +146,7 @@ const CUDOperations = ({
             thumbnail: "",
             description: "",
             rating: book!.rating,
+            authorid: 0,
           });
         }}
       ></div>
@@ -159,7 +163,19 @@ const CUDOperations = ({
               <header className="flex w-full">
                 <div className="flex-1 ps-2">
                   <h2 className=" text-xl">{book?.title}</h2>
-                  <div className="text-xs">Author: {book?.author}</div>
+                  <div
+                    className={`text-xs`}
+                    onClick={() => {
+                      if (book.authorid) navigate(`/authors/${book?.authorid}`);
+                    }}
+                  >
+                    Author:{" "}
+                    <span
+                      className={`${book.authorid ? "cursor-pointer underline" : ""}`}
+                    >
+                      {book?.author}
+                    </span>
+                  </div>
                   <div className="text-xs flex items-center">
                     Rating: <span className="px-0.5"></span>
                     {Array.from({ length: 5 }, (_, i) => {
@@ -231,6 +247,7 @@ const CUDOperations = ({
                         thumbnail: "",
                         description: "",
                         rating: book!.rating,
+                        authorid: 0,
                       });
                     }}
                   >
